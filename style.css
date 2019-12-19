@@ -1,0 +1,20 @@
+html, body {
+    height: 100%;
+}
+#map { 
+    height: 100vh;
+}
+
+.file-active:hover, .file-disable {
+    background-color: rgb(243,212,216);
+    cursor: pointer;
+}
+
+.file-active, .file-disable:hover{
+    background-color: rgb(215,238,216);
+}
+
+.badge-danger:hover {
+    background-color: black;
+    
+}
