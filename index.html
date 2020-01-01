@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="librarys/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh">
 
     <!-- Mapbox -->
 
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='librarys/mapbox-gl.js'></script>
+    <link href='librarys/mapbox-gl.css' rel='stylesheet' />
 
     <link rel="stylesheet" href="style.css">
     <title>Emily's File Viewer</title>
@@ -24,25 +24,20 @@
         <div class="row">
             <div class="col-3 file-selection">
                 <h1>Emily's File Viewer</h1>
-                <div class="input-group">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="geoJSONFile" aria-describedby="GEOJSONFILE" multiple>
-                        <label class="custom-file-label" id="geoJSONFileText">Choose file</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Map</label>
                     </div>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="geoJSONFileSubmit">Add</button>
-                    </div>
+                    <select class="custom-select" id="file-selector" onchange="selectLayer(this.selectedIndex)">
+                    </select>
                 </div>
-                <ul class="list-group mt-2" id="file-list">
-                </ul>
             </div>
             <div class="col-9">
                 <div id="map"></div>
             </div>
         </div>
         <!-- Lodash -->
-        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"
-            integrity="sha256-VeNaFBVDhoX3H+gJ37DpT/nTuZTdjYro9yBruHjVmoQ=" crossorigin="anonymous"></script>
+        <script src="librarys/lodash.min.js" integrity="sha256-VeNaFBVDhoX3H+gJ37DpT/nTuZTdjYro9yBruHjVmoQ="></script>
         <script src="app.js"></script>
 </body>
 

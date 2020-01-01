@@ -4,37 +4,62 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/streets-v9'
 });
 
-let filesMap = new Map();
+//List geoJSON Files here seperated by commas.
+// Make sure the files are in the /data directroy
+const jsonFiles = [
+    "test2.geojson",
+    "test.geojson"
+]
+
+let geoJSONData = [];
+let fileSelector = document.getElementById("file-selector");
+let curSelectedMap = "";
 
 
-let fileList = document.getElementById("file-list");
 
-var bounds = new mapboxgl.LngLatBounds();
+function getAllJSONFiles() {
+    jsonFiles.forEach((v, i) => {
+        getJSON('data/'+v, (err, data) => {
+            if (err !== null) {
+                alert("Something went wrong:\n" + err);
+            }
+            let bounds = new mapboxgl.LngLatBounds();
+            data.features.forEach(function (feature) {
+                bounds.extend(feature.geometry.coordinates);
+            });
+            const layerINFO = {
+                data: data,
+                filename: v,
+                bounds: bounds,
+                index: i,
+            }
+            geoJSONData.push(layerINFO);
+            addFilesToSelector(layerINFO);
+            addGeoJSONtoMap(layerINFO);
+            if (i == 0) {
+                selectLayer(0)
+            }
+        });
+    })
+}
 
-document.getElementById("geoJSONFile").addEventListener("change", function () {
-    if (this.files.length == 1) {
-        document.getElementById("geoJSONFileText").innerHTML = this.files[0].name;
-    } else {
-        document.getElementById("geoJSONFileText").innerHTML = this.files.length + " files selected"
+function addFilesToSelector(layerINFO) {
+    var node = document.createElement("option");
+    node.innerHTML = layerINFO.filename;
+    fileSelector.appendChild(node);
+}
+
+function selectLayer(index) {
+    let layerINFO = geoJSONData[index]
+    map.fitBounds(layerINFO.bounds,{padding: 100});
+    if (curSelectedMap !== "") {
+        map.setLayoutProperty(curSelectedMap ,'visibility', 'none');
     }
-});
+    map.on("idle", () => {
+        map.setLayoutProperty(layerINFO.filename ,'visibility', 'visible');
+    });
+}
 
-document.getElementById("geoJSONFileSubmit").addEventListener("click", () => {
-    const files = document.getElementById("geoJSONFile").files
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        var text;
-        file.text().then((str) => {
-            text = str;
-            geoJSON = JSON.parse(text);
-
-
-            geoJSON.id = file.name;
-            addFile(file.name, geoJSON);
-        })
-    }
-});
 
 map.on("load", function () {
     map.loadImage("icon.png", function (error0, image0) {
@@ -43,75 +68,41 @@ map.on("load", function () {
             "sdf": "true"
         });
     });
+    getAllJSONFiles();
 });
 
-function addGeoJSONtoMap(geoJSON) {
-    // console.log(geoJSON);
-    geoJSON.features.forEach(function (feature) {
-        bounds.extend(feature.geometry.coordinates);
-    });
+function addGeoJSONtoMap(layerINFO) {
     map.addLayer({
-        'id': geoJSON.id,
+        'id': layerINFO.filename,
         'type': 'symbol',
         'source': {
             'type': 'geojson',
-            'data': geoJSON,
+            'data': layerINFO.data,
         },
         'layout': {
             'icon-image': 'marker',
             "icon-allow-overlap": true,
             "icon-size": 0.6,
+            'visibility': 'none',
         },
         'paint': {
             'icon-color': ['get', 'marker-color']
         }
     })
-    map.fitBounds(bounds, { padding: 100 });
 }
 
-function addFileList(filename) {
-    var node = document.createElement("li");
-    node.setAttribute("class", "list-group-item file-active");
-    node.setAttribute("id", 'GEOJSON-' + filename);
-    node.innerHTML = filename + ' <span class="badge badge-danger badge-pill">Remove</span>';
-    let item = fileList.appendChild(node)
-    item.addEventListener("click", function () {
-        if (this.classList.contains("file-active")) {
-            map.setLayoutProperty(filename, 'visibility', 'none');
-            this.classList.remove("file-active");
-            this.classList.add("file-disable");
-        } else {
-            map.setLayoutProperty(filename, 'visibility', 'visible');
-            this.classList.remove("file-disable");
-            this.classList.add("file-active");
-        }
-
-    });
-
-    item.childNodes[1].addEventListener("click", function () {
-        removeFile(filename);
-    });
-}
-
-function removeFile(filename) {
-    filesMap.delete(filename);
-    map.removeLayer(filename);
-    map.removeSource(filename);
-    removeFileList(filename);
-}
-
-function removeFileList(filename) {
-    const element = _.find(fileList.childNodes, (o) => { return o.id == 'GEOJSON-' + filename });
-
-    fileList.removeChild(element);
-}
-
-function addFile(filename, geoJSON) {
-    if (filesMap.has(filename)) {
-        removeFile(filename);
-    }
-    filesMap.set(filename, geoJSON)
-
-    addFileList(filename);
-    addGeoJSONtoMap(geoJSON);
-}
+//https://stackoverflow.com/questions/12460378/how-to-get-json-from-url-in-javascript
+function getJSON(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
