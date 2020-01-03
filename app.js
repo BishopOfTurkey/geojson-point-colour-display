@@ -22,7 +22,8 @@ function getAllJSONFiles() {
     jsonFiles.forEach((v, i) => {
         getJSON('data/' + v, (err, data) => {
             if (err !== null) {
-                alert("Something went wrong:\n" + err + data);
+                alert(`Failed to open data/${v} with error code ${err}`);
+                return;
             }
             let bounds = new mapboxgl.LngLatBounds();
             data.features.forEach(function (feature) {
