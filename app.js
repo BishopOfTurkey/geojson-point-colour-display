@@ -46,6 +46,7 @@ function addFilesToSelector(layerINFO) {
     var node = document.createElement("option");
     node.innerHTML = layerINFO.filename;
     fileSelector.appendChild(node);
+    fileSelector.setAttribute("size", geoJSONData.length)
 }
 
 function selectLayers(options) {
