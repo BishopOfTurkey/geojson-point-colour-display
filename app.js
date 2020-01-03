@@ -64,7 +64,7 @@ function selectLayers(options) {
 
 
 map.on("load", function () {
-    map.loadImage("icon.png", function (error0, image0) {
+    map.loadImage("marker2.png", function (error0, image0) {
         if (error0) throw error0;
         map.addImage("marker", image0, {
             "sdf": "true"
@@ -84,7 +84,7 @@ function addGeoJSONtoMap(layerINFO) {
         'layout': {
             'icon-image': 'marker',
             "icon-allow-overlap": true,
-            "icon-size": 0.6,
+            "icon-size": 0.3,
             'visibility': 'none',
         },
         'paint': {
