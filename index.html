@@ -16,19 +16,19 @@
     <link href='librarys/mapbox-gl.css' rel='stylesheet' />
 
     <link rel="stylesheet" href="style.css">
-    <title>Emily's File Viewer</title>
+    <title>File Viewer</title>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-3 file-selection">
-                <h1>Emily's File Viewer</h1>
+                <h2>File Viewer</h2>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <label class="input-group-text">Map</label>
+                        <label class="input-group-text">Maps</label>
                     </div>
-                    <select class="custom-select" id="file-selector" onchange="selectLayer(this.selectedIndex)">
+                    <select class="custom-select" id="file-selector" onchange="selectLayers(this.options)" multiple="multiple" size="8">
                     </select>
                 </div>
             </div>

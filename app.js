@@ -1,7 +1,9 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmlzaG9wb2Z0dXJrZXkiLCJhIjoiY2s0Y254dW5kMDg2NjNtdDYxZ3l6cHUxYSJ9.fQFZz6tWJFj0quCfrJT37g';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9'
+    style: 'mapbox://styles/mapbox/streets-v9',
+    center: [174.7762, -41.2865],
+    zoom: 5
 });
 
 //List geoJSON Files here seperated by commas.
@@ -13,15 +15,14 @@ const jsonFiles = [
 
 let geoJSONData = [];
 let fileSelector = document.getElementById("file-selector");
-let curSelectedMap = "";
 
 
 
 function getAllJSONFiles() {
     jsonFiles.forEach((v, i) => {
-        getJSON('data/'+v, (err, data) => {
+        getJSON('data/' + v, (err, data) => {
             if (err !== null) {
-                alert("Something went wrong:\n" + err);
+                alert("Something went wrong:\n" + err + data);
             }
             let bounds = new mapboxgl.LngLatBounds();
             data.features.forEach(function (feature) {
@@ -34,11 +35,8 @@ function getAllJSONFiles() {
                 index: i,
             }
             geoJSONData.push(layerINFO);
-            addFilesToSelector(layerINFO);
+            addFilesToSelector(layerINFO, false);
             addGeoJSONtoMap(layerINFO);
-            if (i == 0) {
-                selectLayer(0)
-            }
         });
     })
 }
@@ -49,15 +47,19 @@ function addFilesToSelector(layerINFO) {
     fileSelector.appendChild(node);
 }
 
-function selectLayer(index) {
-    let layerINFO = geoJSONData[index]
-    map.fitBounds(layerINFO.bounds,{padding: 100});
-    if (curSelectedMap !== "") {
-        map.setLayoutProperty(curSelectedMap ,'visibility', 'none');
+function selectLayers(options) {
+    let bounds = new mapboxgl.LngLatBounds();
+    for (let i = 0; i < options.length; i++) {
+        const selection = options[i];
+        const layerINFO = geoJSONData[i];
+        if (selection.selected != true) {
+            map.setLayoutProperty(layerINFO.filename, 'visibility', 'none');
+            continue;
+        }
+        bounds.extend(layerINFO.bounds);
+        map.setLayoutProperty(layerINFO.filename, 'visibility', 'visible');
     }
-    map.on("idle", () => {
-        map.setLayoutProperty(layerINFO.filename ,'visibility', 'visible');
-    });
+    map.fitBounds(bounds, { padding: 100 });
 }
 
 
@@ -96,13 +98,13 @@ function getJSON(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'json';
-    xhr.onload = function() {
-      var status = xhr.status;
-      if (status === 200) {
-        callback(null, xhr.response);
-      } else {
-        callback(status, xhr.response);
-      }
+    xhr.onload = function () {
+        var status = xhr.status;
+        if (status === 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status, xhr.response);
+        }
     };
     xhr.send();
 };
